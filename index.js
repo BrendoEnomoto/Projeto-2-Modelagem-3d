@@ -230,7 +230,7 @@ const animate = () => {
   
     if (launcher) {
       //rotação da lua
-      moonPivot.rotation.y -= 0.005;
+      moonPivot.rotation.y -= 0.0025;
 
       //rotação da terra
       earthMesh.rotation.y += 0.0005;
@@ -239,12 +239,20 @@ const animate = () => {
       //pivo de rotação da base
       earthMesh.add(launcherPivot);
       launcherPivot.add(launcher);
-      launcherPivot.rotation.y -= 0.005;
+      launcherPivot.rotation.y -= 0.0025;
 
 
-      //pivo da camera
-      launcher.add(cameraPivot);
-      cameraPivot.add(camera);
+      //pivo da camera launcher
+      //launcher.add(cameraPivot);
+      //cameraPivot.add(camera);
+
+      //pivo da camera lua
+      //moonMesh.add(cameraPivot);
+      //cameraPivot.add(camera);
+      
+      //pivo da camera terra
+      //earthMesh.add(cameraPivot);
+      //cameraPivot.add(camera);
   }
     if (ISS) {
       //pivo de rotação da ISS 
