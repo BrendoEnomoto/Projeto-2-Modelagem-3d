@@ -80,103 +80,77 @@ const starMesh = new THREE.Mesh(starGeometry, starMaterial);
 starMesh.layers.set(1);
 scene.add(starMesh);
 
-//geometria da terra
-const earthgeometry = new THREE.SphereGeometry(19.6, 64, 64);
-
-//material da terra
-const earthMaterial = new THREE.MeshPhongMaterial({
-  roughness: 1,
-  metalness: 0,
-  map: THREE.ImageUtils.loadTexture("texture/earthmap1.jpg"),
-  bumpMap: THREE.ImageUtils.loadTexture("texture/bump.jpg"),
-  bumpScale: 0.3,
-});
-
-//mash da terra
-const earthMesh = new THREE.Mesh(earthgeometry, earthMaterial);
-earthMesh.receiveShadow = true;
-earthMesh.castShadow = true;
-earthMesh.layers.set(0);
-scene.add(earthMesh);
-
-
-//geometria das nuvens
-const cloudgeometry = new THREE.SphereGeometry(19.8, 64, 64);
-
-//material das nuvens
-const cloudMaterial = new THREE.MeshPhongMaterial({
-  map: THREE.ImageUtils.loadTexture("texture/earthCloud.png"),
-  transparent: true,
-});
-
-//nuvem mesh
-const cloud = new THREE.Mesh(cloudgeometry, cloudMaterial);
-earthMesh.layers.set(0);
-scene.add(cloud);
-
-//geometria da nuvem
-const moongeometry = new THREE.SphereGeometry(2, 64, 64);
-
-//material da nuvem 
-const moonMaterial = new THREE.MeshPhongMaterial({
-  roughness: 5,
-  metalness: 0,
-  map: THREE.ImageUtils.loadTexture("texture/moonmap4k.jpg"),
-  bumpMap: THREE.ImageUtils.loadTexture("texture/moonbump4k.jpg"),
-  bumpScale: 0.02,
-});
-
-//mash da lua
-const moonMesh = new THREE.Mesh(moongeometry, moonMaterial);
-moonMesh.receiveShadow = true;
-moonMesh.castShadow = true;
-moonMesh.position.x = 40;
-moonMesh.layers.set(0);
-
-//pivo de rotação da lua
-var moonPivot = new THREE.Object3D();
-earthMesh.add(moonPivot);
-moonPivot.add(moonMesh);
 
 //adiciona os modelos 3d
 var loader = new GLTFLoader();
 
 //base de lançamento
-var launcher;
+loader.load( "./models/launcher/scene.glb", function( gltf ) {gltf.scene.traverse( function( node ) {
 
-loader.load( "./models/launcher/scene.glb",function(gltf){gltf.scene.traverse(function(node){
-    if ( node.isMesh ) { 
-        node.castShadow = true;
-        node.receiveShadow = true;
-    }
-});
-launcher = gltf.scene;
-launcher.position.set(37.995,0,0);
-launcher.rotation.z = 1.5;
-launcher.scale.set(0.005,0.005,0.005);
-scene.add(launcher);
-} );
-
-//ISS
-
-var ISS;
-
-loader.load( "./models/iss/scene.glb",function(gltf){gltf.scene.traverse(function(node){
   if ( node.isMesh ) { 
       node.castShadow = true;
-      node.receiveShadow = false;
+      node.receiveShadow = true;
   }
-});
-ISS = gltf.scene;
-ISS.scale.set(0.5,0.5,0.5);
-ISS.position.set(20,0);
-ISS.layers.set(0)
-scene.add(ISS);
+
 } );
+
+scene.add(gltf.scene);
+
+} );
+
+//spot lights para a launcher
+var spot_light_1 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_1.castShadow = true;
+spot_light_1.target.position.set(0,3,0);
+spot_light_1.position.set(13.5,10,25);
+scene.add(spot_light_1);
+scene.add(spot_light_1.target);
+spot_light_1.shadow.camera.zoom = 1;
+
+var spot_light_2 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_2.castShadow = true;
+spot_light_2.target.position.set(0,3,0);
+spot_light_2.position.set(13.5,7,25);
+scene.add(spot_light_2);
+scene.add(spot_light_2.target);
+spot_light_2.shadow.camera.zoom = 1;
+
+var spot_light_3 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_3.castShadow = true;
+spot_light_3.target.position.set(0,3,0);
+spot_light_3.position.set(16.5,8,-14);
+scene.add(spot_light_3);
+scene.add(spot_light_3.target);
+spot_light_3.shadow.camera.zoom = 1;
+
+var spot_light_4 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_4.castShadow = true;
+spot_light_4.target.position.set(0,3,0);
+spot_light_4.position.set(-11,7,-14);
+scene.add(spot_light_4);
+scene.add(spot_light_4.target);
+spot_light_4.shadow.camera.zoom = 1;
+
+var spot_light_5 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_5.castShadow = true;
+spot_light_5.target.position.set(0,3,0);
+spot_light_5.position.set(-11,10,-14);
+scene.add(spot_light_5);
+scene.add(spot_light_5.target);
+spot_light_5.shadow.camera.zoom = 1;
+
+var spot_light_6 = new THREE.SpotLight(new THREE.Color(0xffffff),3);
+spot_light_6.castShadow = true;
+spot_light_6.target.position.set(0,3,0);
+spot_light_6.position.set(-18,8,15);
+scene.add(spot_light_6);
+scene.add(spot_light_6.target);
+spot_light_6.shadow.camera.zoom = 1;
+
 
 
 //sol vermelho ponto de luz 
-const pointLight = new THREE.PointLight(0xB22222, 4);
+const pointLight = new THREE.PointLight(0xB22222, 2);
 pointLight.castShadow = true;
 pointLight.shadowCameraVisible = true;
 pointLight.shadowBias = 0.00001;
@@ -188,7 +162,7 @@ scene.add(pointLight);
 
 
 //sol azul ponto de luz 
-const pointLight2 = new THREE.PointLight(0x4169E1, 4);
+const pointLight2 = new THREE.PointLight(0x4169E1, 2);
 pointLight2.castShadow = true;
 pointLight2.shadowCameraVisible = true;
 pointLight2.shadowBias = 0.00001;
@@ -212,38 +186,8 @@ window.addEventListener(
 
 camera.position.set(0,4,50)
 
-var launcherPivot = new THREE.Object3D();
-var cameraPivot = new THREE.Object3D();
-var issPivot = new THREE.Object3D();
-
 const animate = () => {
-    if (launcher) {
-        //rotação da lua
-        moonPivot.rotation.y -= 0.005;
-        moonPivot.rotation.x = 0.5;
-
-        //pivo de rotação da base
-        earthMesh.add(launcherPivot);
-        launcherPivot.add(launcher);
-        launcherPivot.rotation.y -= 0.005;
-        launcherPivot.rotation.x = 0.5;
-
-        //pivo da camera
-        //launcher.add(cameraPivot);
-        //cameraPivot.add(camera);
-    }
-    if (ISS) {
-        //pivo de rotação da ISS 
-        earthMesh.add(issPivot);
-        issPivot.add(ISS);
-        issPivot.rotation.y -= 0.002;
-        issPivot.rotation.x = 0.005;
-        //pivo da camera
-        //ISS.add(cameraPivot);
-        //cameraPivot.add(camera);
-  }
     requestAnimationFrame(animate);
-    cloud.rotation.y-=0.0002;
     //pivo da camera
     //cameraPivot.rotation.y += 0.001;
     starMesh.rotation.y += 0.0002;
