@@ -46,24 +46,15 @@ bloomComposer.addPass(bloomPass);
 const controlador = new OrbitControls(camera, renderer.domElement);
 
 
-//Sol azul
+//Sol
 
-const color = new THREE.Color("#B22222");
+const color = new THREE.Color("#FDB813");
 const geometry = new THREE.IcosahedronGeometry(1, 15);
 const material = new THREE.MeshBasicMaterial({ color: color });
 const sphere = new THREE.Mesh(geometry, material);
 sphere.position.set(-50, 20, -60);
 sphere.layers.set(1);
 scene.add(sphere);
-
-//Sol vermelho
-const color2 = new THREE.Color("#4169E1");
-const geometry2 = new THREE.IcosahedronGeometry(1, 15);
-const material2 = new THREE.MeshBasicMaterial({ color: color2 });
-const sphere2 = new THREE.Mesh(geometry2, material2);
-sphere2.position.set(50, 20, 60);
-sphere2.layers.set(1);
-scene.add(sphere2);
 
 // geometria da galaxia
 const starGeometry = new THREE.SphereGeometry(80, 64, 64);
@@ -174,9 +165,28 @@ ISS.layers.set(0)
 scene.add(ISS);
 } );
 
+// endurance spaceship
+var endurance;
 
-//sol vermelho ponto de luz 
-const pointLight = new THREE.PointLight(0xB22222, 4);
+loader.load( "./models/endurance_spaceship/scene.gltf",function(gltf){gltf.scene.traverse(function(node){
+    if ( node.isMesh ) { 
+        node.castShadow = true;
+        node.receiveShadow = false;
+    }
+});
+endurance = gltf.scene;
+endurance.position.set(20,21,0);
+endurance.scale.set(0.025,0.025,0.025);
+scene.add(endurance);
+} );
+
+//iluminação
+//luz ambiente
+const ambientlight = new THREE.AmbientLight(0xffffff, 0.2);
+scene.add(ambientlight);
+
+//sol ponto de luz 
+const pointLight = new THREE.PointLight(0xffffff, 2);
 pointLight.castShadow = true;
 pointLight.shadowCameraVisible = true;
 pointLight.shadowBias = 0.00001;
@@ -187,16 +197,6 @@ pointLight.position.set(-50, 20, -60);
 scene.add(pointLight);
 
 
-//sol azul ponto de luz 
-const pointLight2 = new THREE.PointLight(0x4169E1, 4);
-pointLight2.castShadow = true;
-pointLight2.shadowCameraVisible = true;
-pointLight2.shadowBias = 0.00001;
-pointLight2.shadowDarkness = 0.2;
-pointLight2.shadowMapWidth = 2048;
-pointLight2.shadowMapHeight = 2048;
-pointLight2.position.set(50, 20, 60);
-scene.add(pointLight2);
 
 //adciona a detecção automatica do tamamanho da janela de exibição 
 window.addEventListener(
@@ -217,31 +217,6 @@ var cameraPivot = new THREE.Object3D();
 var issPivot = new THREE.Object3D();
 
 const animate = () => {
-    if (launcher) {
-        //rotação da lua
-        moonPivot.rotation.y -= 0.005;
-        moonPivot.rotation.x = 0.5;
-
-        //pivo de rotação da base
-        earthMesh.add(launcherPivot);
-        launcherPivot.add(launcher);
-        launcherPivot.rotation.y -= 0.005;
-        launcherPivot.rotation.x = 0.5;
-
-        //pivo da camera
-        //launcher.add(cameraPivot);
-        //cameraPivot.add(camera);
-    }
-    if (ISS) {
-        //pivo de rotação da ISS 
-        earthMesh.add(issPivot);
-        issPivot.add(ISS);
-        issPivot.rotation.y -= 0.002;
-        issPivot.rotation.x = 0.005;
-        //pivo da camera
-        //ISS.add(cameraPivot);
-        //cameraPivot.add(camera);
-  }
     requestAnimationFrame(animate);
     cloud.rotation.y-=0.0002;
     //pivo da camera
@@ -252,11 +227,46 @@ const animate = () => {
     renderer.clearDepth();
     camera.layers.set(0);
     renderer.render(scene, camera);
+  
+    if (launcher) {
+      //rotação da lua
+      moonPivot.rotation.y -= 0.005;
+
+      //rotação da terra
+      earthMesh.rotation.y += 0.0005;
+
+
+      //pivo de rotação da base
+      earthMesh.add(launcherPivot);
+      launcherPivot.add(launcher);
+      launcherPivot.rotation.y -= 0.005;
+
+
+      //pivo da camera
+      launcher.add(cameraPivot);
+      cameraPivot.add(camera);
+  }
+    if (ISS) {
+      //pivo de rotação da ISS 
+      earthMesh.add(issPivot);
+      issPivot.add(ISS);
+      issPivot.rotation.y -= 0.001;
+      //pivo da camera
+      //ISS.add(cameraPivot);
+      //cameraPivot.add(camera);
+    }
+    if (endurance) {
+      endurance.rotation.z += 0.003;
+      endurance.position.z += 0.005;
+      //pivo da camera
+      //endurance.add(cameraPivot);
+      //cameraPivot.add(camera);
+    }
   };
 animate();
 
 // adiciona musica de fundo
-/* const listener = new THREE.AudioListener();
+const listener = new THREE.AudioListener();
 camera.add( listener );
 const sound = new THREE.Audio( listener );
 const audioLoader = new THREE.AudioLoader();
@@ -265,4 +275,4 @@ audioLoader.load( './interstellar.mp3', function( buffer ) {
 	sound.setLoop( true );
 	sound.setVolume( 0.3 );
 	sound.play();
-});  */
+});
