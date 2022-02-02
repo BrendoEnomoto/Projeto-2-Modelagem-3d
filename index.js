@@ -123,8 +123,14 @@ moonMesh.castShadow = true;
 moonMesh.position.x = 40;
 moonMesh.layers.set(0);
 
+//moon rotation pivot
+var moonPivot = new THREE.Object3D();
+earthMesh.add(moonPivot);
+moonPivot.add(moonMesh);
+
 //adiciona os modelos 3d
 var loader = new GLTFLoader();
+
 //rocket launcher
 var launcher;
 
@@ -145,10 +151,24 @@ launcher.scale.set(0.005,0.005,0.005); */
 scene.add(launcher);
 } );
 
+//ISS
 
-var moonPivot = new THREE.Object3D();
-earthMesh.add(moonPivot);
-moonPivot.add(moonMesh);
+var ISS;
+
+loader.load( "./models/iss/scene.glb",function(gltf){gltf.scene.traverse(function(node){
+  if ( node.isMesh ) { 
+      node.castShadow = true;
+      node.receiveShadow = true;
+  }
+});
+ISS = gltf.scene;
+ISS.scale.set(0.5,0.5,0.5);
+ISS.position.set(20,0)
+scene.add(ISS);
+} );
+
+
+
 
 
 //ambient light
@@ -246,11 +266,12 @@ window.addEventListener(
 camera.position.set(0,4,50)
 
 var launcherPivot = new THREE.Object3D();
-var cameraPivot = new THREE.Object3D()
+var cameraPivot = new THREE.Object3D();
+var issPivot = new THREE.Object3D();
 
 const animate = () => {
     if (launcher) {
-        //moon pivot
+        //moon rotation
         moonPivot.rotation.y -= 0.005;
         moonPivot.rotation.x = 0.5;
 
@@ -264,10 +285,18 @@ const animate = () => {
         //launcherPivot.rotation.y -= 0.005;
         //launcherPivot.rotation.x = 0.5;
     }
+    if (ISS) {
+        //ISS pivot
+        earthMesh.add(issPivot);
+        issPivot.add(ISS);
+        issPivot.rotation.y -= 0.002;
+        issPivot.rotation.x = 0.005;
+        //camera pivot
+        ISS.add(cameraPivot);
+        cameraPivot.add(camera);
+  }
     requestAnimationFrame(animate);
     cloud.rotation.y-=0.0002;
-    //moon rotation
-
     //camerapivot
     //cameraPivot.rotation.y += 0.001;
     starMesh.rotation.y += 0.0002;
